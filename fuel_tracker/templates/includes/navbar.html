@@ -14,21 +14,18 @@
             </a>
             {% if user.is_authenticated %}
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#!">Settings</a></li>
-                    <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                    {% comment %} <li><a class="dropdown-item" href="#!">Kişisel Bilgiler</a></li> {% endcomment %}
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="#!">Logout</a></li>
+                    <li><a class="dropdown-item" href="/logout">Çıkış Yap</a></li>
                 </ul>
             {% else %}
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#!">Login</a></li>
-                    <li><a class="dropdown-item" href="#!">Register</a></li>
+                    <li><a class="dropdown-item" href="/login">Giriş Yap</a></li>
+                    <li><a class="dropdown-item" href="/register">Kayıt ol</a></li>
                     <li><hr class="dropdown-divider" /></li>
-                    <li><a class="dropdown-item" href="#!">Forgot Password</a></li>
+                    <li><a class="dropdown-item" href="/password">Şifremi Unuttum</a></li>
                 </ul>
-            {% endif %}
-            
-            
+            {% endif %}          
             
         </li>
     </ul>

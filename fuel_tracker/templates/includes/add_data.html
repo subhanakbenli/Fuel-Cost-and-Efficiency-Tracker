@@ -1,0 +1,107 @@
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Yakıt Bilgisi Ekle</h2>
+        <div class="card p-4 shadow">
+            <form id="fuelForm">
+                <div class="mb-3">
+                    <label for="vehicleName" class="form-label">Araç Seç</label>
+                    <select class="form-select" id="vehicleName" required>
+                        <option value="" selected disabled>Araç seçiniz</option>
+                        <option value="Araç 1">Araç 1</option>
+                        <option value="Araç 2">Araç 2</option>
+                        <option value="Araç 3">Araç 3</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="fuelDate" class="form-label">Tarih</label>
+                    <input type="date" class="form-control" id="fuelDate" value="<?= new Date().toISOString().slice(0, 10) ?>" required>
+                </div>
+                <div class="mb-3">
+                    <label for="firmName" class="form-label">Firma Adı</label>
+                    <select class="form-select" id="firmName" required>
+                        <!-- Bu seçenekler views.py tarafından doldurulacak -->
+                        {% for firm in firms %}
+                        <option value="{{ firm }}">{{ firm }}</option>
+                        {% endfor %}
+                        <option value="other">Diğer</option>
+                    </select>
+                    <input type="text" class="form-control mt-2 d-none" id="customFirmName" placeholder="Yeni firma adı girin">
+                </div>
+                <div class="mb-3">
+                    <label for="fuelAmount" class="form-label">Alınan Litre (L)</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="fuelAmount" placeholder="Örneğin: 50" step="1" min="0" value="0" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="totalCost" class="form-label">Ödenen Tutar (₺)</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="totalCost" placeholder="Örneğin: 1000" step="1" min="0" value="0" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="carKm" class="form-label">Arabanın Kilometresi</label>
+                    <input type="number" class="form-control" id="carKm" placeholder="Örneğin: 75000" required>
+                </div>
+                <button type="button" class="btn btn-primary w-100" id="addFuelButton">Ekle</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row" id="fuelCardsContainer"></div>
+    </div>
+
+    <script>
+        // Firma seçimi için diğer seçeneği kontrol et
+        const firmNameSelect = document.getElementById('firmName');
+        const customFirmNameInput = document.getElementById('customFirmName');
+
+        firmNameSelect.addEventListener('change', function () {
+            if (firmNameSelect.value === 'other') {
+                customFirmNameInput.classList.remove('d-none');
+                customFirmNameInput.required = true;
+            } else {
+                customFirmNameInput.classList.add('d-none');
+                customFirmNameInput.required = false;
+            }
+        });
+
+        // Formu gönderme ve kart ekleme işlemi
+        document.getElementById('addFuelButton').addEventListener('click', function () {
+            const vehicleName = document.getElementById('vehicleName').value;
+            const fuelDate = document.getElementById('fuelDate').value;
+            const firmName = firmNameSelect.value === 'other' ? customFirmNameInput.value : firmNameSelect.value;
+            const fuelAmount = document.getElementById('fuelAmount').value;
+            const totalCost = document.getElementById('totalCost').value;
+            const carKm = document.getElementById('carKm').value;
+
+            if (vehicleName && fuelDate && firmName && fuelAmount && totalCost && carKm) {
+                const card = document.createElement('div');
+                card.className = 'col-md-4 mb-4';
+                card.innerHTML = `
+                    <div class="card shadow h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${vehicleName} - ${fuelDate}</h5>
+                            <p class="card-text">
+                                <strong>Firma:</strong> ${firmName}<br>
+                                <strong>Alınan Litre:</strong> ${fuelAmount} L<br>
+                                <strong>Ödenen Tutar:</strong> ${totalCost} ₺<br>
+                                <strong>Arabanın Kilometresi:</strong> ${carKm} km
+                            </p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('fuelCardsContainer').appendChild(card);
+                fuelForm.reset();
+                customFirmNameInput.classList.add('d-none');
+                customFirmNameInput.required = false;
+                document.getElementById('fuelDate').value = new Date().toISOString().slice(0, 10);
+            } else {
+                alert('Lütfen tüm alanları doldurun!');
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
