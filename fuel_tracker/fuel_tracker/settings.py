@@ -83,16 +83,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'FuelTrackerdb',  # Uzaktaki veritabanı adı
-#         'USER': 'FuelTracker_dev',    # MySQL kullanıcı adı
-#         'PASSWORD': 'FuelTracker!1',         # MySQL şifresi
-#         'HOST': '77.92.154.83',    # Uzak MySQL sunucusunun IP adresi veya alan adı
-#         'PORT': '3306',              # MySQL varsayılan portu (genelde 3306)
-#     }
-# }
 
 
 # Password validation

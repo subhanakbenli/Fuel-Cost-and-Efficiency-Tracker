@@ -4,10 +4,15 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
-
+from datetime import date
+from .models import Fuel
 def index(request):
-
-
+    today_date = date.today().strftime('%Y-%m-%d')
+    # vehicles
+    vehicles = ["Car", "Motorcycle", "Truck", "Bus", "Bicycle"]
+    # montly fuel consumption
+    montly_area_labels = ["January", "February", "March", "April", "May", "June"]
+    montly_area_data = [4215, 5312, 6251, 7841, 9821, 14984]
     # Bar Chart Verileri
     bar_labels = ["January", "February", "March", "April", "May", "June"]
     bar_data = [4215, 5312, 6251, 7841, 9821, 14984]
@@ -18,12 +23,15 @@ def index(request):
 
     # Context ile template'e gönder
     firms = ["Shell", "BP", "Opet", "Total"]  # Dinamik liste olabilir (ör. veri tabanından çekilebilir)
-    
     context = {
+        'today_date': today_date,
+        'vehicles': vehicles,
         'bar_labels': bar_labels,
         'bar_data': bar_data,
         'area_labels': area_labels,
         'area_data': area_data,
+        'montly_area_labels': montly_area_labels,
+        'montly_area_data': montly_area_data,
         'firms': firms
     }
     return render(request, 'index.html', context)
@@ -80,8 +88,6 @@ def register_view(request):
 
     return render(request, 'register.html')
 
-
-
 @login_required
 def logout_view(request):
     logout(request)  # Kullanıcıyı çıkış yap
@@ -90,6 +96,30 @@ def logout_view(request):
 def password(request):
     return render(request, "password.html")
 
+
+def add_data(request):
+    if request.method == 'POST':
+        vehicle = request.POST['vehicle_name']
+        fuel_date = request.POST['fuel_date']
+        fuel_volume = request.POST['fuel_amount']
+        total_cost = request.POST['total_cost']
+        firm = request.POST['firm_name']
+        car_km = request.POST['car_km']
+        print(vehicle, fuel_date ,fuel_volume,total_cost,firm )
+        Fuel.objects.create(car=vehicle, 
+                            fuel_date=fuel_date, 
+                            fuel_volume=fuel_volume, 
+                            fuel_cost=total_cost, 
+                            fuel_firm=firm, 
+                            car_km=car_km)
+        # Veritabanına kaydet
+        # Örnek: Fuel.objects.create(vehicle=vehicle, fuel_type=fuel_type, fuel_amount=fuel_amount, fuel_price=fuel_price, firm=firm, date=date)
+        messages.success(request, "Data added successfully!")
+        return redirect('index')
+
+    
+    return redirect('index')
+
 @login_required
 def show_tables(request):
     return render(request, "tables.html")
@@ -97,6 +127,10 @@ def show_tables(request):
 
 
 def show_charts(request):
+    
+     # montly fuel consumption
+    montly_area_labels = ["January", "February", "March", "April", "May", "June"]
+    montly_area_data = [4215, 5312, 6251, 7841, 9821, 14984]
     # Bar Chart Verileri
     bar_labels = ["January", "February", "March", "April", "May", "June"]
     bar_data = [4215, 5312, 6251, 7841, 9821, 14984]
@@ -107,6 +141,8 @@ def show_charts(request):
 
     # Context ile template'e gönder
     context = {
+        'montly_area_labels': montly_area_labels,
+        'montly_area_data': montly_area_data,
         'bar_labels': bar_labels,
         'bar_data': bar_data,
         'area_labels': area_labels,
