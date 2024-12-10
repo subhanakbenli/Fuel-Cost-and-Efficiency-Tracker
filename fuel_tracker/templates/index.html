@@ -30,12 +30,31 @@
                 <main>
                     <div class="container-fluid px-4">
                         
-                        
+                       
                         <div class="row">
                             <div class="col-xl-6">
+                                
                                 {% include 'includes/add_data.html' %}
                             </div>
                             <div class="col-xl-6">
+                                <label for="vehicleSelect">Araç Seçin:</label>
+                                <select id="vehicleSelect" class="form-control">
+                                    {% for vehicle in vehicles %}
+                                        <option value="{{ vehicle }}" {% if vehicle == selected_vehicle %}selected{% endif %}>
+                                            {{ vehicle }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <label for="fuelSelect">Yakıt Türü Seçin:</label>
+                                <select id="fuelSelect" class="form-control">
+                                    {% for fuel in fuel_types %}
+                                        <option value="{{ fuel }}" {% if fuel == selected_fuel_type %}selected{% endif %}>
+                                            {{ fuel }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <br>
+                                
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <i class="fas fa-chart-area me-1"></i>
@@ -43,19 +62,13 @@
                                     </div>
                                     <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
                                 </div>
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-chart-bar me-1"></i>
-                                        Aylık Alınan Yakıt Miktarı
-                                    </div>
-                                    <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
-                                </div>
+                                
                                 <div class="card mb-4">
                                     <div class="card-header">
                                         <i class="fas fa-chart-area me-1"></i>
                                         Aylık Yakıt Tüketimi Maliyeti
                                     </div>
-                                    <div class="card-body"><canvas id="montlyAreaChart" width="100%" height="30"></canvas></div>
+                                    <div class="card-body"><canvas id="montlyAreaChart" width="100%" height="40"></canvas></div>
                                 </div>
                                 
                             </div>
@@ -84,40 +97,8 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
         <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
-        <script>
-            // Django'dan gelen veriler
-            const barLabels = {{ bar_labels|safe }};  // Bar grafiği etiketleri
-            const barData = {{ bar_data|safe }};      // Bar grafiği verileri
         
-            // Bar Chart Example
-            var ctx = document.getElementById("myBarChart").getContext('2d');
-            var myBarChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: barLabels,
-                    datasets: [{
-                        label: "Revenue",
-                        backgroundColor: "rgba(2,117,216,1)",
-                        borderColor: "rgba(2,117,216,1)",
-                        data: barData
-                    }]
-                },
-                options: {
-                    scales: {
-                        xAxes: [{
-                            gridLines: { display: false },
-                            ticks: { maxTicksLimit: 6 }
-                        }],
-                        yAxes: [{
-                            ticks: { min: 0, max: Math.max(...barData) + 1000, maxTicksLimit: 5 },
-                            gridLines: { display: true }
-                        }]
-                    },
-                    legend: { display: false }
-                }
-            });
-        </script>
-        <script>
+        {% comment %} <script>
             // Django'dan gelen veriler
             const areaLabels = {{ area_labels|safe }};
             const areaData = {{ area_data|safe }};
@@ -129,7 +110,7 @@
                 data: {
                     labels: areaLabels,
                     datasets: [{
-                        label: "Sessions",
+                        label: "Ortalama Yakıt Maliyeti",
                         lineTension: 0.3,
                         backgroundColor: "rgba(2,117,216,0.2)",
                         borderColor: "rgba(2,117,216,1)",
@@ -144,6 +125,15 @@
                     }],
                 },
                 options: {
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                let datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                let value = tooltipItem.yLabel;
+                                return `${datasetLabel}: ${value} TL`; 
+                            }
+                        }
+                    },
                     scales: {
                         xAxes: [{
                             time: { unit: 'date' },
@@ -153,7 +143,7 @@
                         yAxes: [{
                             ticks: {
                                 min: 0,
-                                max: Math.max(...areaData) + 5000, // Verilere göre maksimum
+                                max: Math.max(...areaData) + 50, // Verilere göre maksimum
                                 maxTicksLimit: 5
                             },
                             gridLines: { color: "rgba(0, 0, 0, .125)" }
@@ -175,7 +165,7 @@
                 data: {
                     labels: montly_areaLabels,
                     datasets: [{
-                        label: "Sessions",
+                        label: "Aylık Yakıt Tüketimi Maliyeti",
                         lineTension: 0.3,
                         backgroundColor: "rgba(2,117,216,0.2)",
                         borderColor: "rgba(2,117,216,1)",
@@ -190,6 +180,15 @@
                     }],
                 },
                 options: {
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                let datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                let value = tooltipItem.yLabel;
+                                return `${datasetLabel}: ${value} TL`; 
+                            }
+                        }
+                    },
                     scales: {
                         xAxes: [{
                             time: { unit: 'date' },
@@ -199,7 +198,7 @@
                         yAxes: [{
                             ticks: {
                                 min: 0,
-                                max: Math.max(...montly_areaData) + 5000, // Verilere göre maksimum
+                                max: Math.max(...montly_areaData) + 100, // Verilere göre maksimum
                                 maxTicksLimit: 5
                             },
                             gridLines: { color: "rgba(0, 0, 0, .125)" }
@@ -208,6 +207,100 @@
                     legend: { display: false }
                 }
             });
+        </script> {% endcomment %}
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const vehicleSelect = document.getElementById('vehicleSelect');
+                const fuelSelect = document.getElementById('fuelSelect');
+                const myAreaChartCanvas = document.getElementById("myAreaChart").getContext('2d');
+                const montlyAreaChartCanvas = document.getElementById("montlyAreaChart").getContext('2d');
+        
+                let myLineChart;
+                let montlyLineChart;
+        
+                // Grafik oluşturma fonksiyonu
+                function createChart(ctx, labels, data, labelText) {
+                    return new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: labelText,
+                                lineTension: 0.3,
+                                backgroundColor: "rgba(2,117,216,0.2)",
+                                borderColor: "rgba(2,117,216,1)",
+                                pointRadius: 5,
+                                pointBackgroundColor: "rgba(2,117,216,1)",
+                                pointBorderColor: "rgba(255,255,255,0.8)",
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: "rgba(2,117,216,1)",
+                                pointHitRadius: 50,
+                                pointBorderWidth: 2,
+                                data: data,
+                            }],
+                        },
+                        options: {
+                            tooltips: {
+                                callbacks: {
+                                    label: function(tooltipItem, data) {
+                                        let datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                        let value = tooltipItem.yLabel;
+                                        return `${datasetLabel}: ${value} TL`;
+                                    }
+                                }
+                            },
+                            scales: {
+                                xAxes: [{
+                                    time: { unit: 'date' },
+                                    gridLines: { display: false },
+                                    ticks: { maxTicksLimit: 7 }
+                                }],
+                                yAxes: [{
+                                    ticks: {
+                                        min: 0,
+                                        max: Math.max(...data) + 50,
+                                        maxTicksLimit: 5
+                                    },
+                                    gridLines: { color: "rgba(0, 0, 0, .125)" }
+                                }],
+                            },
+                            legend: { display: false }
+                        }
+                    });
+                }
+        
+                // Grafik güncelleme fonksiyonu
+                function updateCharts(areaLabels, areaData, montlyAreaLabels, montlyAreaData) {
+                    if (myLineChart) myLineChart.destroy();
+                    if (montlyLineChart) montlyLineChart.destroy();
+        
+                    myLineChart = createChart(myAreaChartCanvas, areaLabels, areaData, "Ortalama Yakıt Maliyeti");
+                    montlyLineChart = createChart(montlyAreaChartCanvas, montlyAreaLabels, montlyAreaData, "Aylık Yakıt Tüketimi Maliyeti");
+                }
+        
+                // Verileri çekme ve grafik güncelleme
+                function fetchChartData() {
+                    const selectedVehicle = vehicleSelect.value;
+                    const selectedFuel = fuelSelect.value;
+        
+                    fetch(`/get_charts?vehicle=${selectedVehicle}&fuel=${selectedFuel}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const { area_labels, area_data, montly_area_labels, montly_area_data } = data;
+                            updateCharts(area_labels, area_data, montly_area_labels, montly_area_data);
+                        })
+                        .catch(error => console.error('Hata:', error));
+                }
+        
+                // Seçimler değiştiğinde tetiklenir
+                vehicleSelect.addEventListener('change', fetchChartData);
+                fuelSelect.addEventListener('change', fetchChartData);
+        
+                // Sayfa yüklendiğinde grafikleri ilk kez oluştur
+                fetchChartData();
+            });
         </script>
+        
     </body>
 </html>

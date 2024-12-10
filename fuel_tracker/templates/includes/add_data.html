@@ -9,11 +9,25 @@
                     <select class="form-select" id="vehicleName" name="vehicle_name" required>
                         <option value="" selected disabled>Araç seçiniz</option>
                         {% for vehicle in vehicles %}
-                        <option value="{{ vehicle }}">{{ vehicle }}</option>
+                        <option value="{{ vehicle }}" {% if vehicle == selected_vehicle %}selected{% endif %}>
+                            {{ vehicle }}
+                        </option>
                         {% endfor %}
                         <option value="other">Diğer</option>
                     </select>
                     <input type="text" class="form-control mt-2 d-none" id="customVehicleName" name="custom_vehicle_name" placeholder="Yeni araç adı girin">
+                </div>
+                <div class="mb-3">
+                    <label for="fuelType" class="form-label">Yakıt Türü</label>
+                    <select class="form-select" id="fuelType" name="fuel_type" required>
+                        <option value="" selected disabled>Yakıt Türü Seçiniz</option>
+                        
+                        {% for type in fuel_types %}
+                        <option value="{{ type }}"{% if type == selected_fuel_type %}selected{% endif %}>
+                            {{ type }}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <div class="mb-3">

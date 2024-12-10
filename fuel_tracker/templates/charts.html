@@ -19,7 +19,9 @@
             <div id="layoutSidenav_nav">
                 {% include 'includes/sidebar.html' %}
             </div>
+            
             <div id="layoutSidenav_content">
+                
                 <main>
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">Charts</h1>
@@ -27,6 +29,27 @@
                             <li class="breadcrumb-item"><a href="/index">Dashboard</a></li>
                             <li class="breadcrumb-item active">Charts</li>
                         </ol>
+
+                        <!-- Dropdowns for Vehicle and Fuel Type -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <label for="vehicleSelect">Araç Seçin:</label>
+                                <select id="vehicleSelect" class="form-control">
+                                    <option value="vehicle1">Araç 1</option>
+                                    <option value="vehicle2">Araç 2</option>
+                                    <option value="vehicle3">Araç 3</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fuelSelect">Yakıt Türü Seçin:</label>
+                                <select id="fuelSelect" class="form-control">
+                                    <option value="diesel">Dizel</option>
+                                    <option value="gasoline">Benzin</option>
+                                    <option value="electric">Elektrik</option>
+                                </select>
+                            </div>
+                        </div>
+
                         {% comment %} <div class="card mb-4">
                             <div class="card-body">
                                 Chart.js is a third party plugin that is used to generate the charts in this template. The charts below have been customized - for further customization options, please visit the official
@@ -92,20 +115,29 @@
                 data: {
                     labels: barLabels,
                     datasets: [{
-                        label: "Revenue",
+                        label: "Alınan Yakıt Miktarı",
                         backgroundColor: "rgba(2,117,216,1)",
                         borderColor: "rgba(2,117,216,1)",
                         data: barData
                     }]
                 },
                 options: {
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                let datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                let value = tooltipItem.yLabel;
+                                return `${datasetLabel}: ${value} Litre`; 
+                            }
+                        }
+                    },
                     scales: {
                         xAxes: [{
                             gridLines: { display: false },
                             ticks: { maxTicksLimit: 6 }
                         }],
                         yAxes: [{
-                            ticks: { min: 0, max: Math.max(...barData) + 1000, maxTicksLimit: 5 },
+                            ticks: { min: 0, max: Math.max(...barData) + 50, maxTicksLimit: 5 },
                             gridLines: { display: true }
                         }]
                     },
@@ -125,7 +157,7 @@
                 data: {
                     labels: areaLabels,
                     datasets: [{
-                        label: "Sessions",
+                        label: "Ortalama Yakıt Maliyeti",
                         lineTension: 0.3,
                         backgroundColor: "rgba(2,117,216,0.2)",
                         borderColor: "rgba(2,117,216,1)",
@@ -140,6 +172,15 @@
                     }],
                 },
                 options: {
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                let datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                let value = tooltipItem.yLabel;
+                                return `${datasetLabel}: ${value} TL`; 
+                            }
+                        }
+                    },
                     scales: {
                         xAxes: [{
                             time: { unit: 'date' },
@@ -149,7 +190,7 @@
                         yAxes: [{
                             ticks: {
                                 min: 0,
-                                max: Math.max(...areaData) + 5000, // Verilere göre maksimum
+                                max: Math.max(...areaData) + 100, // Verilere göre maksimum
                                 maxTicksLimit: 5
                             },
                             gridLines: { color: "rgba(0, 0, 0, .125)" }
@@ -171,7 +212,7 @@
                 data: {
                     labels: montly_areaLabels,
                     datasets: [{
-                        label: "Sessions",
+                        label: "Aylık Yakıt Tüketimi Maliyeti",
                         lineTension: 0.3,
                         backgroundColor: "rgba(2,117,216,0.2)",
                         borderColor: "rgba(2,117,216,1)",
@@ -186,6 +227,15 @@
                     }],
                 },
                 options: {
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                let datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                let value = tooltipItem.yLabel;
+                                return `${datasetLabel}: ${value} TL`; 
+                            }
+                        }
+                    },
                     scales: {
                         xAxes: [{
                             time: { unit: 'date' },
@@ -195,7 +245,7 @@
                         yAxes: [{
                             ticks: {
                                 min: 0,
-                                max: Math.max(...montly_areaData) + 5000, // Verilere göre maksimum
+                                max: Math.max(...montly_areaData) + 100, // Verilere göre maksimum
                                 maxTicksLimit: 5
                             },
                             gridLines: { color: "rgba(0, 0, 0, .125)" }
